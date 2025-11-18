@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frisbee Golf Championship</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        #gameContainer {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        #gameCanvas {
+            border: 4px solid #667eea;
+            border-radius: 10px;
+            display: block;
+            margin: 20px auto;
+            background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 100%);
+            cursor: crosshair;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            gap: 20px;
+        }
+        
+        .player-info {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .player-info.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+        
+        .player-info.completed {
+            opacity: 0.6;
+        }
+        
+        .hole-info {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 10px;
+            margin: 10px 0;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .logo {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .logo img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .power-meter {
+            margin: 15px 0;
+        }
+        
+        .power-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .power-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.1s;
+            border-radius: 15px;
+        }
+        
+        .instructions {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        .modal-content h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        
+        .mode-button {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 20px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .scoreboard {
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        
+        .status-message {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .music-controls {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .music-controls button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div class="logo">
+            <img src="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Game%20Logo.png" alt="Frisbee Golf" onerror="this.style.display='none'">
+        </div>
+        <h1>🥏 Frisbee Golf Championship</h1>
+        
+        <div class="music-controls">
+            <button id="musicToggle">🔇 Pause Music</button>
+        </div>
+        
+        <div class="hole-info" id="holeInfo">Choose Game Mode to Start</div>
+        
+        <div id="statusMessage" class="status-message" style="display:none;"></div>
+        
+        <div class="info-panel">
+            <div class="player-info active" id="player1Info">
+                <h3>Player 1</h3>
+                <p>Total Score: <span id="p1Score">0</span></p>
+                <p>This Hole: <span id="p1Throws">0</span> throws</p>
+                <p id="p1Status"></p>
+            </div>
+            <div class="player-info" id="player2Info">
+                <h3>Player 2</h3>
+                <p>Total Score: <span id="p2Score">0</span></p>
+                <p>This Hole: <span id="p2Throws">0</span> throws</p>
+                <p id="p2Status"></p>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div class="instructions" id="instructions">
+            Click and drag to aim and set power. Release to throw!
+        </div>
+        
+        <div class="power-meter">
+            <div class="power-bar">
+                <div class="power-fill" id="powerFill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn">Reset Hole</button>
+            <button id="restartBtn">Restart Game</button>
+            <button id="nextHoleBtn" style="display:none;">Next Hole →</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="modeModal">
+        <div class="modal-content">
+            <h2>🥏 Choose Game Mode</h2>
+            <button class="mode-button" onclick="startGame('1player')">👤 1 Player Mode</button>
+            <button class="mode-button" onclick="startGame('2player')">👥 2 Player Mode</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="winnerModal">
+        <div class="modal-content">
+            <h2>🏆 Game Over! 🏆</h2>
+            <div class="scoreboard" id="finalScores"></div>
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Theme%20Song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        
+        // Game state
+        let currentHole = 0;
+        let currentPlayer = 1;
+        let frisbee = { x: 0, y: 0, vx: 0, vy: 0, radius: 8 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let scores = [0, 0];
+        let holeThrows = [0, 0];
+        let hasCompletedHole = [false, false];
+        let gameMode = null;
+        let isTransitioning = false;
+        let isMusicPlaying = true; // Set to true by default now
+        let playerPositions = [{x: 0, y: 0}, {x: 0, y: 0}];
+        
+        // Start music automatically
+        window.addEventListener('load', function() {
+            // Try to play music automatically
+            bgMusic.volume = 0.5;
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicToggle.textContent = '🔇 Pause Music';
+            }).catch(e => {
+                console.log("Autoplay failed, waiting for user interaction");
+                // If autoplay fails, set the button to play
+                isMusicPlaying = false;
+                musicToggle.textContent = '🔊 Play Music';
+            });
+            
+            document.getElementById('modeModal').style.display = 'flex';
+        });
+        
+        // Music control
+        musicToggle.addEventListener('click', function() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicToggle.textContent = '🔊 Play Music';
+            } else {
+                bgMusic.play().catch(e => {
+                    console.log("Audio play failed:", e);
+                });
+                musicToggle.textContent = '🔇 Pause Music';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+        
+        // Course data - 24 unique holes
+        const holes = [
+            // Original 12 holes
+            { par: 3, start: {x: 100, y: 300}, basket: {x: 700, y: 300}, obstacles: [] },
+            { par: 3, start: {x: 100, y: 500}, basket: {x: 700, y: 100}, obstacles: [{x: 400, y: 300, w: 80, h: 200}] },
+            { par: 4, start: {x: 100, y: 100}, basket: {x: 700, y: 500}, obstacles: [{x: 300, y: 250, r: 60}, {x: 500, y: 350, r: 60}] },
+            { par: 3, start: {x: 400, y: 550}, basket: {x: 400, y: 50}, obstacles: [{x: 250, y: 300, w: 300, h: 20}] },
+            { par: 4, start: {x: 100, y: 300}, basket: {x: 700, y: 300}, obstacles: [{x: 300, y: 200, w: 20, h: 200}, {x: 500, y: 200, w: 20, h: 200}] },
+            { par: 5, start: {x: 100, y: 500}, basket: {x: 700, y: 100}, obstacles: [{x: 250, y: 400, r: 50}, {x: 400, y: 250, r: 50}, {x: 550, y: 200, r: 50}] },
+            { par: 3, start: {x: 700, y: 300}, basket: {x: 100, y: 300}, obstacles: [{x: 400, y: 300, r: 70}] },
+            { par: 4, start: {x: 100, y: 100}, basket: {x: 700, y: 500}, obstacles: [{x: 200, y: 300, w: 400, h: 20}] },
+            { par: 4, start: {x: 400, y: 300}, basket: {x: 700, y: 100}, obstacles: [{x: 200, y: 150, r: 40}, {x: 550, y: 250, r: 40}] },
+            { par: 5, start: {x: 100, y: 300}, basket: {x: 700, y: 300}, obstacles: [{x: 250, y: 200, w: 20, h: 80}, {x: 400, y: 350, w: 20, h: 80}, {x: 550, y: 200, w: 20, h: 80}] },
+            { par: 4, start: {x: 100, y: 550}, basket: {x: 700, y: 50}, obstacles: [{x: 300, y: 400, r: 55}, {x: 500, y: 200, r: 55}] },
+            { par: 5, start: {x: 100, y: 100}, basket: {x: 700, y: 500}, obstacles: [{x: 300, y: 200, w: 60, h: 60}, {x: 450, y: 300, r: 50}, {x: 600, y: 350, w: 60, h: 60}] },
+            
+            // Additional 12 holes for a total of 24
+            { par: 3, start: {x: 700, y: 100}, basket: {x: 100, y: 500}, obstacles: [{x: 400, y: 300, w: 30, h: 200}, {x: 500, y: 200, w: 30, h: 200}] },
+            { par: 4, start: {x: 100, y: 100}, basket: {x: 700, y: 100}, obstacles: [{x: 300, y: 200, r: 50}, {x: 500, y: 200, r: 50}] },
+            { par: 3, start: {x: 700, y: 500}, basket: {x: 100, y: 100}, obstacles: [{x: 400, y: 300, w: 150, h: 20}] },
+            { par: 4, start: {x: 100, y: 300}, basket: {x: 700, y: 300}, obstacles: [{x: 250, y: 200, r: 40}, {x: 400, y: 300, r: 40}, {x: 550, y: 400, r: 40}] },
+            { par: 5, start: {x: 100, y: 100}, basket: {x: 700, y: 500}, obstacles: [{x: 200, y: 200, w: 20, h: 100}, {x: 350, y: 300, w: 100, h: 20}, {x: 500, y: 400, w: 20, h: 100}] },
+            { par: 3, start: {x: 400, y: 50}, basket: {x: 400, y: 550}, obstacles: [{x: 250, y: 200, r: 35}, {x: 550, y: 400, r: 35}] },
+            { par: 4, start: {x: 700, y: 300}, basket: {x: 100, y: 300}, obstacles: [{x: 400, y: 200, w: 20, h: 200}, {x: 500, y: 200, w: 20, h: 200}, {x: 300, y: 200, w: 20, h: 200}] },
+            { par: 3, start: {x: 100, y: 500}, basket: {x: 700, y: 500}, obstacles: [{x: 250, y: 400, r: 45}, {x: 400, y: 400, r: 45}, {x: 550, y: 400, r: 45}] },
+            { par: 4, start: {x: 700, y: 100}, basket: {x: 100, y: 500}, obstacles: [{x: 400, y: 300, w: 200, h: 20}, {x: 300, y: 200, w: 20, h: 200}] },
+            { par: 5, start: {x: 100, y: 300}, basket: {x: 700, y: 300}, obstacles: [{x: 250, y: 200, r: 30}, {x: 350, y: 250, r: 30}, {x: 450, y: 300, r: 30}, {x: 550, y: 350, r: 30}] },
+            { par: 3, start: {x: 700, y: 500}, basket: {x: 100, y: 100}, obstacles: [{x: 400, y: 300, w: 100, h: 100}] },
+            { par: 4, start: {x: 100, y: 100}, basket: {x: 700, y: 500}, obstacles: [{x: 300, y: 200, w: 20, h: 200}, {x: 500, y: 200, w: 20, h: 200}, {x: 400, y: 300, r: 40}] },
+            { par: 5, start: {x: 100, y: 500}, basket: {x: 700, y: 100}, obstacles: [{x: 200, y: 400, w: 100, h: 20}, {x: 400, y: 300, w: 100, h: 20}, {x: 600, y: 200, w: 100, h: 20}] }
+        ];
+        
+        // Game functions
+        function showStatus(message, duration = 2000) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, duration);
+        }
+        
+        function startGame(mode) {
+            gameMode = mode;
+            document.getElementById('modeModal').style.display = 'none';
+            
+            // Ensure music is playing when game starts
+            if (!isMusicPlaying) {
+                bgMusic.play().catch(e => {
+                    console.log("Audio play failed:", e);
+                });
+                isMusicPlaying = true;
+                musicToggle.textContent = '🔇 Pause Music';
+            }
+            
+            // Hide player 2 info in single player mode
+            if (mode === '1player') {
+                document.getElementById('player2Info').style.display = 'none';
+                document.getElementById('player1Info').style.flex = '1';
+            } else {
+                document.getElementById('player2Info').style.display = 'block';
+                document.getElementById('player1Info').style.flex = '1';
+                document.getElementById('player2Info').style.flex = '1';
+            }
+            
+            // Reset all game state
+            currentHole = 0;
+            scores = [0, 0];
+            holeThrows = [0, 0];
+            hasCompletedHole = [false, false];
+            currentPlayer = 1;
+            
+            initHole();
+        }
+        
+        function initHole() {
+            const hole = holes[currentHole];
+            
+            // Reset player positions for the new hole
+            playerPositions = [
+                {x: hole.start.x, y: hole.start.y},
+                {x: hole.start.x, y: hole.start.y}
+            ];
+            
+            // Reset hole-specific state
+            holeThrows = [0, 0];
+            hasCompletedHole = [false, false];
+            isTransitioning = false;
+            
+            // Set frisbee to current player's position
+            frisbee.x = playerPositions[currentPlayer - 1].x;
+            frisbee.y = playerPositions[currentPlayer - 1].y;
+            frisbee.vx = 0;
+            frisbee.vy = 0;
+            
+            document.getElementById('nextHoleBtn').style.display = 'none';
+            updateUI();
+            
+            document.getElementById('instructions').textContent = 'Click and drag to aim and set power. Release to throw!';
+        }
+        
+        function switchPlayer() {
+            // Only switch players in 2-player mode
+            if (gameMode === '2player') {
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                
+                // Set frisbee to the new player's position
+                frisbee.x = playerPositions[currentPlayer - 1].x;
+                frisbee.y = playerPositions[currentPlayer - 1].y;
+                frisbee.vx = 0;
+                frisbee.vy = 0;
+                
+                updateUI();
+                document.getElementById('instructions').textContent = 'Click and drag to aim and set power. Release to throw!';
+            }
+        }
+        
+        function updateUI() {
+            if (gameMode) {
+                document.getElementById('holeInfo').textContent = `Hole ${currentHole + 1} of 24 - Par ${holes[currentHole].par}`;
+            }
+            
+            document.getElementById('p1Score').textContent = scores[0];
+            document.getElementById('p2Score').textContent = scores[1];
+            document.getElementById('p1Throws').textContent = holeThrows[0];
+            document.getElementById('p2Throws').textContent = holeThrows[1];
+            
+            document.getElementById('p1Status').textContent = hasCompletedHole[0] ? '✓ Complete!' : '';
+            document.getElementById('p2Status').textContent = hasCompletedHole[1] ? '✓ Complete!' : '';
+            
+            // Update active player highlighting
+            if (gameMode === '2player') {
+                document.getElementById('player1Info').classList.toggle('active', currentPlayer === 1 && !hasCompletedHole[0]);
+                document.getElementById('player2Info').classList.toggle('active', currentPlayer === 2 && !hasCompletedHole[1]);
+                
+                document.getElementById('player1Info').classList.toggle('completed', hasCompletedHole[0]);
+                document.getElementById('player2Info').classList.toggle('completed', hasCompletedHole[1]);
+            } else {
+                // In 1-player mode, always show player 1 as active if not completed
+                document.getElementById('player1Info').classList.toggle('active', !hasCompletedHole[0]);
+                document.getElementById('player1Info').classList.toggle('completed', hasCompletedHole[0]);
+            }
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const hole = holes[currentHole];
+            
+            // Draw grass
+            ctx.fillStyle = '#90EE90';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid pattern
+            ctx.strokeStyle = 'rgba(0,100,0,0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            // Draw obstacles
+            hole.obstacles.forEach(obs => {
+                if (obs.r) {
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(obs.x - 10, obs.y - 10, 20, 40);
+                    ctx.fillStyle = '#228B22';
+                    ctx.beginPath();
+                    ctx.arc(obs.x, obs.y, obs.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#1a6b1a';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = '#A0522D';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = '#654321';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                }
+            });
+            
+            // Draw start tee
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(hole.start.x, hole.start.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Draw basket
+            ctx.fillStyle = '#FF4500';
+            ctx.beginPath();
+            ctx.arc(hole.basket.x, hole.basket.y, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#8B0000';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Draw catch zone
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.arc(hole.basket.x, hole.basket.y, 50, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw chains
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 / 8) * i;
+                ctx.beginPath();
+                ctx.moveTo(hole.basket.x, hole.basket.y - 20);
+                ctx.lineTo(hole.basket.x + Math.cos(angle) * 25, hole.basket.y + Math.sin(angle) * 25);
+                ctx.strokeStyle = '#C0C0C0';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Draw frisbee
+            ctx.fillStyle = currentPlayer === 1 ? '#FF1493' : '#00BFFF';
+            ctx.beginPath();
+            ctx.arc(frisbee.x, frisbee.y, frisbee.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw drag line
+            if (isDragging) {
+                ctx.beginPath();
+                ctx.moveTo(frisbee.x, frisbee.y);
+                ctx.lineTo(dragStart.x, dragStart.y);
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                const dx = dragStart.x - frisbee.x;
+                const dy = dragStart.y - frisbee.y;
+                const power = Math.min(Math.sqrt(dx*dx + dy*dy) / 2, 100);
+                document.getElementById('powerFill').style.width = power + '%';
+            }
+        }
+        
+        function update() {
+            if (frisbee.vx !== 0 || frisbee.vy !== 0) {
+                frisbee.x += frisbee.vx;
+                frisbee.y += frisbee.vy;
+                
+                // Add friction
+                frisbee.vx *= 0.98;
+                frisbee.vy *= 0.98;
+                
+                // Stop when velocity is very low
+                if (Math.abs(frisbee.vx) < 0.1 && Math.abs(frisbee.vy) < 0.1) {
+                    frisbee.vx = 0;
+                    frisbee.vy = 0;
+                    
+                    // Save the player's position for their next throw
+                    playerPositions[currentPlayer - 1] = {x: frisbee.x, y: frisbee.y};
+                    
+                    // In 2-player mode, switch players after a throw lands
+                    if (gameMode === '2player' && !hasCompletedHole[currentPlayer - 1]) {
+                        setTimeout(() => {
+                            if (!isTransitioning) {
+                                switchPlayer();
+                            }
+                        }, 1000);
+                    }
+                }
+                
+                // Bounce off walls
+                if (frisbee.x < frisbee.radius || frisbee.x > canvas.width - frisbee.radius) {
+                    frisbee.vx *= -0.7;
+                    frisbee.x = Math.max(frisbee.radius, Math.min(canvas.width - frisbee.radius, frisbee.x));
+                }
+                if (frisbee.y < frisbee.radius || frisbee.y > canvas.height - frisbee.radius) {
+                    frisbee.vy *= -0.7;
+                    frisbee.y = Math.max(frisbee.radius, Math.min(canvas.height - frisbee.radius, frisbee.y));
+                }
+                
+                // Collision with obstacles
+                const hole = holes[currentHole];
+                hole.obstacles.forEach(obs => {
+                    if (obs.r) {
+                        const dx = frisbee.x - obs.x;
+                        const dy = frisbee.y - obs.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < obs.r + frisbee.radius) {
+                            const angle = Math.atan2(dy, dx);
+                            frisbee.x = obs.x + Math.cos(angle) * (obs.r + frisbee.radius);
+                            frisbee.y = obs.y + Math.sin(angle) * (obs.r + frisbee.radius);
+                            frisbee.vx *= -0.5;
+                            frisbee.vy *= -0.5;
+                        }
+                    } else {
+                        if (frisbee.x > obs.x - frisbee.radius && frisbee.x < obs.x + obs.w + frisbee.radius &&
+                            frisbee.y > obs.y - frisbee.radius && frisbee.y < obs.y + obs.h + frisbee.radius) {
+                            const cx = Math.max(obs.x, Math.min(frisbee.x, obs.x + obs.w));
+                            const cy = Math.max(obs.y, Math.min(frisbee.y, obs.y + obs.h));
+                            if (Math.abs(frisbee.x - cx) < frisbee.radius) {
+                                frisbee.vx *= -0.5;
+                            }
+                            if (Math.abs(frisbee.y - cy) < frisbee.radius) {
+                                frisbee.vy *= -0.5;
+                            }
+                        }
+                    }
+                });
+                
+                // Check if in basket
+                if (!isTransitioning && !hasCompletedHole[currentPlayer - 1]) {
+                    const dx = frisbee.x - hole.basket.x;
+                    const dy = frisbee.y - hole.basket.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const speed = Math.sqrt(frisbee.vx*frisbee.vx + frisbee.vy*frisbee.vy);
+                    
+                    if (dist < 50 && speed < 10) {
+                        isTransitioning = true;
+                        frisbee.vx = 0;
+                        frisbee.vy = 0;
+                        frisbee.x = hole.basket.x;
+                        frisbee.y = hole.basket.y;
+                        hasCompletedHole[currentPlayer - 1] = true;
+                        
+                        // Add throws to total score
+                        scores[currentPlayer - 1] += holeThrows[currentPlayer - 1];
+                        
+                        const playerName = currentPlayer === 1 ? 'Player 1' : 'Player 2';
+                        showStatus(`✓ ${playerName} completed in ${holeThrows[currentPlayer - 1]} throws!`);
+                        updateUI();
+                        
+                        setTimeout(() => {
+                            // Check if we should move to next hole
+                            if (gameMode === '1player' || 
+                                (gameMode === '2player' && hasCompletedHole[0] && hasCompletedHole[1])) {
+                                // Both players done (or single player) - automatically go to next hole
+                                document.getElementById('instructions').textContent = 'Moving to next hole...';
+                                setTimeout(() => {
+                                    nextHole();
+                                }, 1500);
+                            } else if (gameMode === '2player') {
+                                // Switch to other player in 2-player mode
+                                switchPlayer();
+                            }
+                            isTransitioning = false;
+                        }, 1500);
+                    }
+                }
+            }
+        }
+        
+        // Event listeners
+        canvas.addEventListener('mousedown', (e) => {
+            if (!gameMode || isTransitioning) return;
+            if (frisbee.vx === 0 && frisbee.vy === 0 && !hasCompletedHole[currentPlayer - 1]) {
+                const rect = canvas.getBoundingClientRect();
+                dragStart.x = e.clientX - rect.left;
+                dragStart.y = e.clientY - rect.top;
+                isDragging = true;
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = canvas.getBoundingClientRect();
+                dragStart.x = e.clientX - rect.left;
+                dragStart.y = e.clientY - rect.top;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                const dx = frisbee.x - dragStart.x;
+                const dy = frisbee.y - dragStart.y;
+                frisbee.vx = dx * 0.15;
+                frisbee.vy = dy * 0.15;
+                isDragging = false;
+                holeThrows[currentPlayer - 1]++;
+                updateUI();
+                document.getElementById('powerFill').style.width = '0%';
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            initHole();
+        });
+        
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            location.reload();
+        });
+        
+        document.getElementById('nextHoleBtn').addEventListener('click', () => {
+            nextHole();
+        });
+        
+        function nextHole() {
+            currentHole++;
+            if (currentHole >= holes.length) {
+                showWinner();
+            } else {
+                initHole();
+            }
+        }
+        
+        function showWinner() {
+            const modal = document.getElementById('winnerModal');
+            const finalScores = document.getElementById('finalScores');
+            
+            // Calculate total par for 24 holes
+            const totalPar = holes.reduce((sum, hole) => sum + hole.par, 0);
+            
+            if (gameMode === '1player') {
+                finalScores.innerHTML = `
+                    <h3>Game Completed!</h3>
+                    <p>Your Total Score: ${scores[0]} strokes</p>
+                    <p>Course Par: ${totalPar}</p>
+                    <p>${scores[0] <= totalPar ? 'Great round!' : 'Nice effort!'}</p>
+                `;
+            } else {
+                let winner = scores[0] < scores[1] ? 'Player 1' : 'Player 2';
+                if (scores[0] === scores[1]) winner = "It's a Tie";
+                
+                finalScores.innerHTML = `
+                    <h3>${winner} Wins!</h3>
+                    <p>Player 1: ${scores[0]} strokes</p>
+                    <p>Player 2: ${scores[1]} strokes</p>
+                `;
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize game
+        gameLoop();
+    </script>
+</body>
+</html>
