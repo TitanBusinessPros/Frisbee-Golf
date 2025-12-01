@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frisbee Golf Championship</title>
-    <link rel="icon" type="image/x-icon" href="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Logo%202.png">
+    <title>Mobile Frisbee Golf</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Favicon.png">
     <style>
         * {
             margin: 0;
@@ -19,54 +19,59 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
         }
         
         #gameContainer {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 30px;
-            max-width: 900px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 15px;
             width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
         }
         
         h1 {
             text-align: center;
             color: #667eea;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         
         #gameCanvas {
-            border: 4px solid #667eea;
-            border-radius: 10px;
+            border: 3px solid #667eea;
+            border-radius: 8px;
             display: block;
-            margin: 20px auto;
+            margin: 10px auto;
             background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 100%);
             cursor: crosshair;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
         }
         
         .info-panel {
             display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-            gap: 20px;
+            flex-direction: column;
+            margin: 15px 0;
+            gap: 10px;
         }
         
         .player-info {
-            flex: 1;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
         
         .player-info.active {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            transform: scale(1.05);
+            transform: scale(1.02);
             transition: all 0.3s ease;
         }
         
@@ -76,48 +81,53 @@
         
         .hole-info {
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            border-radius: 10px;
-            margin: 10px 0;
+            border-radius: 8px;
+            margin: 8px 0;
             color: white;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
         
         .controls {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
         }
         
         .logo {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         
         .logo img {
-            max-width: 200px;
+            max-width: 150px;
             height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
         
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 20px;
             cursor: pointer;
-            margin: 5px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            flex: 1;
+            min-width: 120px;
         }
         
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         button:disabled {
@@ -126,14 +136,14 @@
         }
         
         .power-meter {
-            margin: 15px 0;
+            margin: 12px 0;
         }
         
         .power-bar {
             width: 100%;
-            height: 30px;
+            height: 25px;
             background: #ddd;
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
         }
@@ -142,16 +152,16 @@
             height: 100%;
             background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
             transition: width 0.1s;
-            border-radius: 15px;
+            border-radius: 12px;
         }
         
         .instructions {
             background: #f0f0f0;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .modal {
@@ -165,60 +175,103 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 15px;
         }
         
         .modal-content {
             background: white;
-            padding: 40px;
-            border-radius: 20px;
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
-            max-width: 500px;
+            width: 100%;
+            max-width: 400px;
         }
         
         .modal-content h2 {
             color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            font-size: 2em;
+            margin-bottom: 15px;
         }
         
         .mode-button {
             display: block;
             width: 100%;
-            margin: 15px 0;
-            padding: 20px;
-            font-size: 20px;
+            margin: 12px 0;
+            padding: 15px;
+            font-size: 18px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .scoreboard {
-            margin: 20px 0;
-            font-size: 1.2em;
+            margin: 15px 0;
+            font-size: 1.1em;
         }
         
         .status-message {
             background: #4CAF50;
             color: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
-            margin: 10px 0;
+            margin: 8px 0;
             text-align: center;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .music-controls {
             text-align: center;
-            margin: 10px 0;
+            margin: 8px 0;
         }
         
         .music-controls button {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 480px) {
+            #gameContainer {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            button {
+                font-size: 13px;
+                padding: 8px 16px;
+                min-width: 110px;
+            }
+            
+            .player-info {
+                padding: 10px;
+            }
+            
+            .hole-info {
+                padding: 10px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.4em;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <div class="logo">
-            <img src="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Logo%202.png" alt="Frisbee Golf" onerror="this.style.display='none'">
+            <img src="https://github.com/TitanBusinessPros/Frisbee-Golf/raw/main/Frisbee%20Golf%20Game%20Logo.png" alt="Frisbee Golf" onerror="this.style.display='none'">
         </div>
         <h1>🥏 Frisbee Golf Championship</h1>
         
@@ -248,7 +301,7 @@
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         
         <div class="instructions" id="instructions">
-            Click and drag to aim and set power. Release to throw!
+            Touch and drag to aim and set power. Release to throw!
         </div>
         
         <div class="power-meter">
@@ -291,6 +344,21 @@
         const bgMusic = document.getElementById('bgMusic');
         const musicToggle = document.getElementById('musicToggle');
         
+        // Adjust canvas size for mobile
+        function resizeCanvas() {
+            const container = document.getElementById('gameContainer');
+            const containerWidth = container.clientWidth - 30; // Account for padding
+            
+            // Set canvas dimensions
+            canvas.width = containerWidth;
+            canvas.height = containerWidth * 0.75; // 4:3 aspect ratio
+            
+            // Redraw the game if it's in progress
+            if (gameMode) {
+                draw();
+            }
+        }
+        
         // Game state
         let currentHole = 0;
         let currentPlayer = 1;
@@ -302,7 +370,7 @@
         let hasCompletedHole = [false, false];
         let gameMode = null;
         let isTransitioning = false;
-        let isMusicPlaying = true; // Set to true by default now
+        let isMusicPlaying = true;
         let playerPositions = [{x: 0, y: 0}, {x: 0, y: 0}];
         
         // Start music automatically
@@ -320,7 +388,13 @@
             });
             
             document.getElementById('modeModal').style.display = 'flex';
+            
+            // Initialize canvas size
+            resizeCanvas();
         });
+        
+        // Handle window resize
+        window.addEventListener('resize', resizeCanvas);
         
         // Music control
         musicToggle.addEventListener('click', function() {
@@ -394,11 +468,8 @@
             // Hide player 2 info in single player mode
             if (mode === '1player') {
                 document.getElementById('player2Info').style.display = 'none';
-                document.getElementById('player1Info').style.flex = '1';
             } else {
                 document.getElementById('player2Info').style.display = 'block';
-                document.getElementById('player1Info').style.flex = '1';
-                document.getElementById('player2Info').style.flex = '1';
             }
             
             // Reset all game state
@@ -414,10 +485,14 @@
         function initHole() {
             const hole = holes[currentHole];
             
+            // Scale positions based on current canvas size
+            const scaleX = canvas.width / 800;
+            const scaleY = canvas.height / 600;
+            
             // Reset player positions for the new hole
             playerPositions = [
-                {x: hole.start.x, y: hole.start.y},
-                {x: hole.start.x, y: hole.start.y}
+                {x: hole.start.x * scaleX, y: hole.start.y * scaleY},
+                {x: hole.start.x * scaleX, y: hole.start.y * scaleY}
             ];
             
             // Reset hole-specific state
@@ -434,7 +509,7 @@
             document.getElementById('nextHoleBtn').style.display = 'none';
             updateUI();
             
-            document.getElementById('instructions').textContent = 'Click and drag to aim and set power. Release to throw!';
+            document.getElementById('instructions').textContent = 'Touch and drag to aim and set power. Release to throw!';
         }
         
         function switchPlayer() {
@@ -449,7 +524,7 @@
                 frisbee.vy = 0;
                 
                 updateUI();
-                document.getElementById('instructions').textContent = 'Click and drag to aim and set power. Release to throw!';
+                document.getElementById('instructions').textContent = 'Touch and drag to aim and set power. Release to throw!';
             }
         }
         
@@ -485,6 +560,10 @@
             
             const hole = holes[currentHole];
             
+            // Scale positions based on current canvas size
+            const scaleX = canvas.width / 800;
+            const scaleY = canvas.height / 600;
+            
             // Draw grass
             ctx.fillStyle = '#90EE90';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -492,13 +571,14 @@
             // Draw grid pattern
             ctx.strokeStyle = 'rgba(0,100,0,0.1)';
             ctx.lineWidth = 1;
-            for (let i = 0; i < canvas.width; i += 40) {
+            const gridSize = 40 * Math.min(scaleX, scaleY);
+            for (let i = 0; i < canvas.width; i += gridSize) {
                 ctx.beginPath();
                 ctx.moveTo(i, 0);
                 ctx.lineTo(i, canvas.height);
                 ctx.stroke();
             }
-            for (let i = 0; i < canvas.height; i += 40) {
+            for (let i = 0; i < canvas.height; i += gridSize) {
                 ctx.beginPath();
                 ctx.moveTo(0, i);
                 ctx.lineTo(canvas.width, i);
@@ -508,28 +588,29 @@
             // Draw obstacles
             hole.obstacles.forEach(obs => {
                 if (obs.r) {
+                    const radius = obs.r * Math.min(scaleX, scaleY);
                     ctx.fillStyle = '#8B4513';
-                    ctx.fillRect(obs.x - 10, obs.y - 10, 20, 40);
+                    ctx.fillRect(obs.x * scaleX - 10, obs.y * scaleY - 10, 20, 40);
                     ctx.fillStyle = '#228B22';
                     ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, obs.r, 0, Math.PI * 2);
+                    ctx.arc(obs.x * scaleX, obs.y * scaleY, radius, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.strokeStyle = '#1a6b1a';
                     ctx.lineWidth = 3;
                     ctx.stroke();
                 } else {
                     ctx.fillStyle = '#A0522D';
-                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.fillRect(obs.x * scaleX, obs.y * scaleY, obs.w * scaleX, obs.h * scaleY);
                     ctx.strokeStyle = '#654321';
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeRect(obs.x * scaleX, obs.y * scaleY, obs.w * scaleX, obs.h * scaleY);
                 }
             });
             
             // Draw start tee
             ctx.fillStyle = '#FFD700';
             ctx.beginPath();
-            ctx.arc(hole.start.x, hole.start.y, 15, 0, Math.PI * 2);
+            ctx.arc(hole.start.x * scaleX, hole.start.y * scaleY, 15 * Math.min(scaleX, scaleY), 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = '#FFA500';
             ctx.lineWidth = 3;
@@ -538,7 +619,7 @@
             // Draw basket
             ctx.fillStyle = '#FF4500';
             ctx.beginPath();
-            ctx.arc(hole.basket.x, hole.basket.y, 30, 0, Math.PI * 2);
+            ctx.arc(hole.basket.x * scaleX, hole.basket.y * scaleY, 30 * Math.min(scaleX, scaleY), 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = '#8B0000';
             ctx.lineWidth = 4;
@@ -549,7 +630,7 @@
             ctx.lineWidth = 3;
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
-            ctx.arc(hole.basket.x, hole.basket.y, 50, 0, Math.PI * 2);
+            ctx.arc(hole.basket.x * scaleX, hole.basket.y * scaleY, 50 * Math.min(scaleX, scaleY), 0, Math.PI * 2);
             ctx.stroke();
             ctx.setLineDash([]);
             
@@ -557,8 +638,11 @@
             for (let i = 0; i < 8; i++) {
                 const angle = (Math.PI * 2 / 8) * i;
                 ctx.beginPath();
-                ctx.moveTo(hole.basket.x, hole.basket.y - 20);
-                ctx.lineTo(hole.basket.x + Math.cos(angle) * 25, hole.basket.y + Math.sin(angle) * 25);
+                ctx.moveTo(hole.basket.x * scaleX, hole.basket.y * scaleY - 20 * Math.min(scaleX, scaleY));
+                ctx.lineTo(
+                    hole.basket.x * scaleX + Math.cos(angle) * 25 * Math.min(scaleX, scaleY), 
+                    hole.basket.y * scaleY + Math.sin(angle) * 25 * Math.min(scaleX, scaleY)
+                );
                 ctx.strokeStyle = '#C0C0C0';
                 ctx.lineWidth = 2;
                 ctx.stroke();
@@ -567,7 +651,7 @@
             // Draw frisbee
             ctx.fillStyle = currentPlayer === 1 ? '#FF1493' : '#00BFFF';
             ctx.beginPath();
-            ctx.arc(frisbee.x, frisbee.y, frisbee.radius, 0, Math.PI * 2);
+            ctx.arc(frisbee.x, frisbee.y, frisbee.radius * Math.min(scaleX, scaleY), 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 2;
@@ -628,23 +712,32 @@
                 
                 // Collision with obstacles
                 const hole = holes[currentHole];
+                const scaleX = canvas.width / 800;
+                const scaleY = canvas.height / 600;
+                
                 hole.obstacles.forEach(obs => {
                     if (obs.r) {
-                        const dx = frisbee.x - obs.x;
-                        const dy = frisbee.y - obs.y;
+                        const radius = obs.r * Math.min(scaleX, scaleY);
+                        const dx = frisbee.x - (obs.x * scaleX);
+                        const dy = frisbee.y - (obs.y * scaleY);
                         const dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < obs.r + frisbee.radius) {
+                        if (dist < radius + frisbee.radius) {
                             const angle = Math.atan2(dy, dx);
-                            frisbee.x = obs.x + Math.cos(angle) * (obs.r + frisbee.radius);
-                            frisbee.y = obs.y + Math.sin(angle) * (obs.r + frisbee.radius);
+                            frisbee.x = (obs.x * scaleX) + Math.cos(angle) * (radius + frisbee.radius);
+                            frisbee.y = (obs.y * scaleY) + Math.sin(angle) * (radius + frisbee.radius);
                             frisbee.vx *= -0.5;
                             frisbee.vy *= -0.5;
                         }
                     } else {
-                        if (frisbee.x > obs.x - frisbee.radius && frisbee.x < obs.x + obs.w + frisbee.radius &&
-                            frisbee.y > obs.y - frisbee.radius && frisbee.y < obs.y + obs.h + frisbee.radius) {
-                            const cx = Math.max(obs.x, Math.min(frisbee.x, obs.x + obs.w));
-                            const cy = Math.max(obs.y, Math.min(frisbee.y, obs.y + obs.h));
+                        const obsX = obs.x * scaleX;
+                        const obsY = obs.y * scaleY;
+                        const obsW = obs.w * scaleX;
+                        const obsH = obs.h * scaleY;
+                        
+                        if (frisbee.x > obsX - frisbee.radius && frisbee.x < obsX + obsW + frisbee.radius &&
+                            frisbee.y > obsY - frisbee.radius && frisbee.y < obsY + obsH + frisbee.radius) {
+                            const cx = Math.max(obsX, Math.min(frisbee.x, obsX + obsW));
+                            const cy = Math.max(obsY, Math.min(frisbee.y, obsY + obsH));
                             if (Math.abs(frisbee.x - cx) < frisbee.radius) {
                                 frisbee.vx *= -0.5;
                             }
@@ -657,17 +750,21 @@
                 
                 // Check if in basket
                 if (!isTransitioning && !hasCompletedHole[currentPlayer - 1]) {
-                    const dx = frisbee.x - hole.basket.x;
-                    const dy = frisbee.y - hole.basket.y;
+                    const basketX = hole.basket.x * scaleX;
+                    const basketY = hole.basket.y * scaleY;
+                    const catchRadius = 50 * Math.min(scaleX, scaleY);
+                    
+                    const dx = frisbee.x - basketX;
+                    const dy = frisbee.y - basketY;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     const speed = Math.sqrt(frisbee.vx*frisbee.vx + frisbee.vy*frisbee.vy);
                     
-                    if (dist < 50 && speed < 10) {
+                    if (dist < catchRadius && speed < 10) {
                         isTransitioning = true;
                         frisbee.vx = 0;
                         frisbee.vy = 0;
-                        frisbee.x = hole.basket.x;
-                        frisbee.y = hole.basket.y;
+                        frisbee.x = basketX;
+                        frisbee.y = basketY;
                         hasCompletedHole[currentPlayer - 1] = true;
                         
                         // Add throws to total score
@@ -697,26 +794,24 @@
             }
         }
         
-        // Event listeners
-        canvas.addEventListener('mousedown', (e) => {
+        // Event listeners for both mouse and touch
+        function handleStart(x, y) {
             if (!gameMode || isTransitioning) return;
             if (frisbee.vx === 0 && frisbee.vy === 0 && !hasCompletedHole[currentPlayer - 1]) {
-                const rect = canvas.getBoundingClientRect();
-                dragStart.x = e.clientX - rect.left;
-                dragStart.y = e.clientY - rect.top;
+                dragStart.x = x;
+                dragStart.y = y;
                 isDragging = true;
             }
-        });
+        }
         
-        canvas.addEventListener('mousemove', (e) => {
+        function handleMove(x, y) {
             if (isDragging) {
-                const rect = canvas.getBoundingClientRect();
-                dragStart.x = e.clientX - rect.left;
-                dragStart.y = e.clientY - rect.top;
+                dragStart.x = x;
+                dragStart.y = y;
             }
-        });
+        }
         
-        canvas.addEventListener('mouseup', (e) => {
+        function handleEnd(x, y) {
             if (isDragging) {
                 const dx = frisbee.x - dragStart.x;
                 const dy = frisbee.y - dragStart.y;
@@ -727,6 +822,56 @@
                 updateUI();
                 document.getElementById('powerFill').style.width = '0%';
             }
+        }
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            handleStart(x, y);
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            handleMove(x, y);
+        });
+        
+        canvas.addEventListener('mouseup', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            handleEnd(x, y);
+        });
+        
+        // Touch events
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            handleStart(x, y);
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            handleMove(x, y);
+        });
+        
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.changedTouches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            handleEnd(x, y);
         });
         
         document.getElementById('resetBtn').addEventListener('click', () => {
